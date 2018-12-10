@@ -3,6 +3,16 @@ import os
 import datetime
 import shutil
 from subprocess import *
+from xml.dom import minidom
+
+
+# TODO Running the diffkit with only Tst.xml given.1- in progress
+# TODO Sink file name + Timestamp. ->2
+# TODO console log printing in separate file.->3
+# TODO Rebuild should used the same uploaded file as before.->4
+# TODO summary of diffkit in seperate file.->5
+
+
 
 
 # functions
@@ -22,6 +32,22 @@ def jarWrapper(*args):
     return ret
 
 
+# Test.xml Parser
+def test_xml_parse(diffkit_test_xml):
+    test_xml = minidom.parse(diffkit_test_xml)
+    test_xml_tags = test_xml.getElementsByTagName('property')
+    lhs_file_path = test_xml_tags[0].attributes['value'].value
+    rhs_file_path = test_xml_tags[1].attributes['value'].value
+    test_sink_diff = test_xml_tags[2].attributes['value'].value
+    return lhs_file_path, rhs_file_path, test_sink_diff
+
+
+x, y, z = test_xml_parse('test9.plan.xml')
+print(x)
+print(y)
+print(z)
+
+
 # create new directory
 def create_directory():
     build = os.environ['BUILD_TAG']
@@ -37,7 +63,7 @@ def copy_files(source, destination_directory, destination):
 
 
 destination_directory = create_directory()
-print destination_directory
+print(destination_directory)
 
 # Copying files
 copy_files('Test.Plan.xml', destination_directory, os.environ['Test.Plan.xml'])
@@ -54,4 +80,4 @@ result = jarWrapper(*args)
 
 # Print the output
 for rest in result:
-    print rest
+    print(rest)
